@@ -1,28 +1,16 @@
-# Data
-data/raw/
-data/processed/
+# ===== DATA =====
+data/raw/*
+data/processed/*
+outputs/*
+!outputs/figures/
 
-# Outputs
-outputs/
-*.pt
-*.pth
-*.ckpt
-*.onnx
+# COLMAP big files
+*.ply
+*.db
+*.bin
 
-# Python cache
+# Python
 __pycache__/
 *.pyc
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Environment
 .env
-.envrc
-
-# OS
-.DS_Store
-Thumbs.db
-
-# VS Code settings (optional)
-.vscode/
+.ipynb_checkpoints/
