@@ -3,7 +3,7 @@ from pathlib import Path
 
 VIDEO = Path("data/raw/chessboard.MOV")
 OUT_DIR = Path("data/processed/calib/frames")
-FPS_OUT = 3  # good for calibration
+FPS_OUT = 3  
 
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)

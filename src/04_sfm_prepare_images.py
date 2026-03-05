@@ -1,7 +1,7 @@
 import shutil
+import argparse
 from pathlib import Path
 
-PLANT_ID = "001"
 
 def copy_with_prefix(src_dir, dst_dir, prefix):
     imgs = sorted(src_dir.glob("*.jpg"))
@@ -13,14 +13,21 @@ def copy_with_prefix(src_dir, dst_dir, prefix):
 
 
 def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--plant_id", required=True)
+    args = parser.parse_args()
+
+    PLANT_ID = args.plant_id
+
     base = Path(f"data/processed/{PLANT_ID}/frames")
     out = Path(f"outputs/models/{PLANT_ID}/sfm/images")
 
     out.mkdir(parents=True, exist_ok=True)
 
-    copy_with_prefix(base / "001_top", out, "top")
-    copy_with_prefix(base / "001_front", out, "front")
-    copy_with_prefix(base / "001_low", out, "low")
+    copy_with_prefix(base / f"{PLANT_ID}_top", out, "top")
+    copy_with_prefix(base / f"{PLANT_ID}_front", out, "front")
+    copy_with_prefix(base / f"{PLANT_ID}_low", out, "low")
 
     print(f"[DONE] Images prepared in {out.resolve()}")
 

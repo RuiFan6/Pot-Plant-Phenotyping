@@ -1,13 +1,8 @@
 import subprocess
+import argparse
 from pathlib import Path
 
-PLANT_ID = "001"
 COLMAP = "COLMAP.bat"
-
-BASE = Path(f"outputs/models/{PLANT_ID}/sfm")
-IMAGES = BASE / "images_masked"
-DB = BASE / "database.db"
-SPARSE = BASE / "sparse"
 
 
 def run(cmd):
@@ -16,6 +11,18 @@ def run(cmd):
 
 
 def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--plant_id", required=True)
+    args = parser.parse_args()
+
+    PLANT_ID = args.plant_id
+
+    BASE = Path(f"outputs/models/{PLANT_ID}/sfm")
+    IMAGES = BASE / "images_masked"
+    DB = BASE / "database.db"
+    SPARSE = BASE / "sparse"
+
     SPARSE.mkdir(parents=True, exist_ok=True)
 
     # Feature extraction

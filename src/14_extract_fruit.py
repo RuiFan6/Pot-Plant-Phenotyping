@@ -11,9 +11,10 @@ from scipy.spatial import cKDTree
 # ------------------------------------------------------------
 
 def redness(colors):
-    R = colors[:,0]
-    G = colors[:,1]
-    B = colors[:,2]
+
+    R = colors[:, 0]
+    G = colors[:, 1]
+    B = colors[:, 2]
 
     return R / (G + B + 1e-6)
 
@@ -64,15 +65,53 @@ def main():
 
     parser.add_argument("--plant_id", default="002")
 
-    parser.add_argument("--seed_eps", type=float, default=6,
-                        help="DBSCAN radius for seeds")
+    parser.add_argument("--min_diam", type=float,
+                        help="Minimum fruit diameter (mm)")
 
-    parser.add_argument("--grow_radius", type=float, default=18,
-                        help="fruit region growing radius")
+    parser.add_argument("--max_diam", type=float,
+                        help="Maximum fruit diameter (mm)")
 
     parser.add_argument("--min_cluster", type=int, default=2000)
 
     args = parser.parse_args()
+
+    # ------------------------------------------------------------
+    # Fruit size handling
+    # ------------------------------------------------------------
+
+    if args.min_diam is None or args.max_diam is None:
+
+        min_diam = 24.0
+        max_diam = 33.0
+
+        print("[INFO] No fruit size provided.")
+        print("[INFO] Using strawberry preset:")
+        print("       min_diam = 24 mm")
+        print("       max_diam = 33 mm")
+
+    else:
+
+        min_diam = args.min_diam
+        max_diam = args.max_diam
+
+        print("[INFO] Using provided fruit size:")
+        print(f"       min_diam = {min_diam} mm")
+        print(f"       max_diam = {max_diam} mm")
+
+    # ------------------------------------------------------------
+    # Auto parameter computation
+    # ------------------------------------------------------------
+
+    seed_eps = 0.25 * min_diam
+    grow_radius = 1.1 * (max_diam / 2)
+
+    print("\n[INFO] Auto parameters:")
+    print(f"       seed_eps = {seed_eps:.2f} mm")
+    print(f"       grow_radius = {grow_radius:.2f} mm")
+
+    # ------------------------------------------------------------
+    # Paths
+    # ------------------------------------------------------------
 
     input_path = Path(
         f"outputs/models/{args.plant_id}/sfm/dense/plant_clean.ply"
@@ -82,7 +121,7 @@ def main():
         f"outputs/models/{args.plant_id}/sfm/dense/fruit_detected.ply"
     )
 
-    print("[INFO] Loading:", input_path)
+    print("\n[INFO] Loading:", input_path)
 
     pcd = o3d.io.read_point_cloud(str(input_path))
 
@@ -111,7 +150,7 @@ def main():
 
     labels = np.array(
         seed_pcd.cluster_dbscan(
-            eps=args.seed_eps,
+            eps=seed_eps,
             min_points=50
         )
     )
@@ -132,7 +171,7 @@ def main():
         seed_points,
         points,
         colors,
-        args.grow_radius
+        grow_radius
     )
 
     fruit_indices = np.where(grow_mask)[0]

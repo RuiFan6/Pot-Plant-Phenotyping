@@ -1,19 +1,25 @@
 from rembg import remove, new_session
 import cv2
 import numpy as np
+import argparse
 from pathlib import Path
-
-PLANT_ID = "001"
-
-IN_DIR = Path(f"outputs/models/{PLANT_ID}/sfm/images")
-OUT_IMG_DIR = Path(f"outputs/models/{PLANT_ID}/sfm/images_masked")
-OUT_MASK_DIR = Path(f"outputs/models/{PLANT_ID}/sfm/masks")
 
 # Try better model for objects/plants
 session = new_session("isnet-general-use")
 
 
 def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--plant_id", required=True)
+    args = parser.parse_args()
+
+    PLANT_ID = args.plant_id
+
+    IN_DIR = Path(f"outputs/models/{PLANT_ID}/sfm/images")
+    OUT_IMG_DIR = Path(f"outputs/models/{PLANT_ID}/sfm/images_masked")
+    OUT_MASK_DIR = Path(f"outputs/models/{PLANT_ID}/sfm/masks")
+
     OUT_IMG_DIR.mkdir(parents=True, exist_ok=True)
     OUT_MASK_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -33,15 +39,13 @@ def main():
         rgba = np.array(result)
         mask = rgba[:, :, 3]
 
-        # ---- Make mask LESS aggressive ----
-
-        # 1. remove tiny holes
+        # remove tiny holes
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
 
-        # 2. expand edges to keep thin leaves
+        # expand edges to keep thin leaves
         mask = cv2.dilate(mask, kernel, iterations=1)
 
-        # 3. optional feather (soft edge)
+        # optional feather (soft edge)
         mask = cv2.GaussianBlur(mask, (7, 7), 0)
 
         # threshold back to binary

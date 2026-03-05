@@ -1,6 +1,7 @@
 import cv2
-import os
+import argparse
 from pathlib import Path
+
 
 def extract(video_path, out_dir, fps=2):
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -28,8 +29,13 @@ def extract(video_path, out_dir, fps=2):
 
 
 def main():
-    raw = Path("data/raw/001")
-    out = Path("data/processed/001/frames")
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--plant_id", required=True)
+    args = parser.parse_args()
+
+    raw = Path(f"data/raw/{args.plant_id}")
+    out = Path(f"data/processed/{args.plant_id}/frames")
 
     for v in raw.glob("*.MOV"):
         name = v.stem
