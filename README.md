@@ -1,4 +1,4 @@
-# pot Plant Phenotyping Pipeline
+# Pot Plant Phenotyping Pipeline
 
 A simple RGB-based 3D phenotyping pipeline using smartphone video and Structure-from-Motion.
 
